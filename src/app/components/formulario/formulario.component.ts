@@ -1,45 +1,55 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, ValidatorFn, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormBuilder,
+  FormControl,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 
 @Component({
   selector: 'app-formulario',
   templateUrl: './formulario.component.html',
-  styleUrls: ['./formulario.component.css']
+  styleUrls: ['./formulario.component.css'],
 })
 export class FormularioComponent implements OnInit {
+  @Output() addUsuario: EventEmitter<any> = new EventEmitter<any>();
 
-@Output () addUsuario: EventEmitter<any> = new EventEmitter<any>();
-
-  formulario= this.formBuilder.group({
-    nombre: ['', [Validators.required ]],
+  formulario = this.formBuilder.group({
+    nombre: ['', [Validators.required]],
     apellido: ['', [Validators.required]],
-    edad : ['', [Validators.required, Validators.min(21), this.ValidarEdad()]],
+    edad: ['', [Validators.required, Validators.min(21), this.ValidarEdad]],
     username: ['', [Validators.required]],
     password: ['', [Validators.required]],
     habilidades: new FormArray([new FormControl()]),
   });
 
-  constructor(
-    private formBuilder: FormBuilder
-  ) { }
+  constructor(private formBuilder: FormBuilder) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
-  submitForm():void {
-    console.log(this.formulario.value);
+  submitForm(): void {
+    
+    /* console.log(this.formulario.value); */
     this.addUsuario.emit(this.formulario.value);
-  } 
-get habilidades(): FormArray {
-  return this.formulario.get('habilidades') as FormArray 
-}
+    this.formulario.reset();
 
-agregarHabilidad():void {
-this.habilidades.push(new FormControl())
-}
-ValidarEdad(): ValidatorFn {
-  return (control: AbstractControl): { [key: string]: any } |null => { 
-    return (Number.isInteger(parseInt(control.value))) ?  { errorEdad: true} :null ;
   }
-}
+  
+  get habilidades(): FormArray {
+    return this.formulario.get('habilidades') as FormArray;
+  }
+
+  agregarHabilidad(): void {
+    this.habilidades.push(new FormControl());
+  }
+
+  ValidarEdad(): ValidatorFn {
+      return (control: AbstractControl): { [key: string]: any } | null => {
+      return Number.isInteger(parseInt(control.value))
+        ? { errorEdad: true }
+        : null;
+    };
+  }
 }
